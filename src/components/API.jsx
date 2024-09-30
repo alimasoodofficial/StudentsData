@@ -2,11 +2,25 @@ import React, { useEffect, useState } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import Items from './Items';
 import axios from 'axios';
+import { useFormik } from 'formik';
+import {fromValidation} from './schemas/Index'
 
+const initialValues = {
+  Email: '',
+  name: '',
+  contact: ''
 
+}
 
 export default function API() {
-  const notify = () => toast('Here is your toast.');
+
+  const {values,error,handleBlur,handleChange,handleSubmit} = useFormik({
+    initialValues: initialValues,
+    onSubmit: (values) => {
+      console.log(values)
+    }
+  })
+  console.log(error)
 
   var [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -212,21 +226,22 @@ export default function API() {
         </form>
       )}
 
+        {/* create form  */}
       {showCreateForm && (
 
         <form className='p-5' onSubmit={createUser} id='createApost'>
           <div className='d-flex justify-content-center py-2'><h2 className='fw-bold'>Create a Post</h2></div>
           <div className="mb-3">
             <label htmlFor="id#" className="form-label" >Email</label>
-            <input type="email" className="form-control" id="postEmail" value={post.Email} aria-describedby="emailHelp" onChange={(e) => { createpost({ ...post, Email: e.target.value }) }} required />
+            <input type="email" className="form-control" id="postEmail" value={values.Email} aria-describedby="emailHelp"  onChange={(e) => { createpost({ ...post, Email: handleChange}) }}  onBlur={handleBlur} required />
           </div>
           <div className="mb-3">
             <label htmlFor="name" className="form-label">Name</label>
-            <input type="text" className="form-control" id="postName" value={post.name} onChange={(e) => { createpost({ ...post, name: e.target.value }) }} required />
+            <input type="text" className="form-control" id="postName" value={values.name} onChange={(e) => { createpost({ ...post, name: handleChange}) }} required onBlur={handleBlur} />
           </div>
           <div className="mb-3">
             <label htmlFor="num" className="form-label">Contact</label>
-            <input type="tel" className="form-control" id="postContact" value={post.contact} onChange={(e) => { createpost({ ...post, contact: e.target.value }) }} />
+            <input type="tel" className="form-control" id="postContact" value={values.contact}  onChange={(e) => { createpost({ ...post, contact: handleChange}) }}  onBlur={handleBlur} />
           </div>
 
           <button type="submit" className="btn btn-primary" >Submit</button>
