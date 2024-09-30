@@ -11,7 +11,15 @@ export default function API() {
   var [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
+  const [showForm, setShowForm] = useState(false);
+  const [showCreateForm, setShowCreateForm] = useState(false);
+
   const [update, Setupdate] = useState({})
+  const [post, createpost] = useState({
+    Email: '',
+    name: '',
+    contact: ''
+  })
 
   const totalItems = data.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -21,29 +29,62 @@ export default function API() {
   const getAPIdata = async () => {
     try {
       const response = await axios.get(api);
-      setData(response.data);
-
-
+      const reversedData = [...response.data].reverse(); // Reverse the data here
+      setData(reversedData); // Set the reversed data to state
     } catch (error) {
       console.log(error);
     }
   };
 
-  const updateUser = (e)=> {
+  const updateUser = (e) => {
     e.preventDefault();
-    axios.put(`${api}/${update.id}`,update)
-    .then((response)=>{
-      console.log(response)
-      toast.success('Submited!')
-      getAPIdata();
-    })
-    .catch((error) => {
-      console.log(error);
-      toast.error('Kindly Fill the form completely!')
-    });
+    axios.put(`${api}/${update.id}`, update)
+      .then((response) => {
+        console.log(response)
+        toast.success('Submited!')
+        getAPIdata();
+      })
+      .catch((error) => {
+        console.log(error);
+        toast.error('Kindly Fill the form completely!')
+      });
 
 
   }
+  const deleteUser = (id) => {
+
+    axios.delete(`${api}/${id}`)
+      .then((response) => {
+        console.log(response)
+        toast.success('Deleted Successfully!')
+        getAPIdata();
+      })
+      .catch((error) => {
+        console.log(error);
+        toast.error('Cannot delete now!')
+      });
+
+  }
+
+
+  const createUser = (e) => {
+
+    e.preventDefault();
+    axios.post(api, post, {
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        console.log("Create successful:", response.data);
+        toast.success('Post Created!')
+        getAPIdata();
+      })
+      .catch((error) => {
+        console.error("Error creating data:", error);
+        toast.error('Post Not Created!')
+      });
+  };
 
   useEffect(() => {
     getAPIdata();
@@ -54,7 +95,7 @@ export default function API() {
   function decrement() {
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
-      toast.success('Previous Decrement!')
+      toast.success('Previous Page!')
 
     }
   }
@@ -62,7 +103,7 @@ export default function API() {
   function increment() {
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1);
-      toast.success('Previous Increment!')
+      toast.success('Next Page!')
 
     }
   }
@@ -71,20 +112,15 @@ export default function API() {
     setItemsPerPage(parseInt(e.target.value));
     setCurrentPage(1);
   };
-  // const valueChange = (e) => {
-  //   setItemsPerPage(e.target.value);
-  //   // setCurrentPage(1);
-  // };
-  // const handleInputChange = (e) => {
-  //   Setupdate({
-  //     ...update,
-  //     [e.target.name]: e.target.value, 
-  //   });
-  // };
+
 
   const selectUser = (item) => {
-    console.log(`DATA`, item)
+    setShowForm(!showForm);
     Setupdate(item)
+
+  }
+  function showCreate() {
+    setShowCreateForm(!showCreateForm);
 
   }
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -95,7 +131,9 @@ export default function API() {
   return (
     <div className="container mt-5">
       <h1 className="text-center mb-4 display-1 fw-bold">Student Data</h1>
-
+      <div className='d-flex py-2'>
+        <a href='#createApost'><button className='btn btn-primary' onClick={showCreate}>Create a Post</button></a>
+      </div>
       <table className="table table-light table-striped ">
         <thead>
           <tr>
@@ -108,7 +146,7 @@ export default function API() {
         </thead>
         <tbody>
           {data.slice(startIndex, endIndex).map((currentElement, index) => (
-            <Items key={index} getdata={currentElement} data={data} selectUser={selectUser} />
+            <Items key={index} getdata={currentElement} data={data} selectUser={selectUser} deleteUser={deleteUser} />
           ))}
         </tbody>
       </table>
@@ -132,8 +170,7 @@ export default function API() {
         </button>
       </div>
 
-
-
+      {/* Filter  */}
       <div className="mb-3">
         <label htmlFor="itemsPerPage" className="form-label">Items per page:</label>
         <select
@@ -150,27 +187,51 @@ export default function API() {
       </div>
 
 
+      {/* update form  */}
+      {showForm && (
+        <form className='p-5 '  >
+          <div className='d-flex justify-content-center py-2'><h2 className='fw-bold'>Update Form</h2></div>
+          <div className="mb-3">
+            <label htmlFor="id#" className="form-label" >Email</label>
+            <input type="email" className="form-control" id="id#" aria-describedby="emailHelp" value={update.Email} onChange={(e) => Setupdate({ ...update, Email: e.target.value })} />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="name" className="form-label">Name</label>
+            <input type="text" className="form-control" id="name" value={update.name} onChange={(e) => Setupdate({ ...update, name: e.target.value })} />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="idnum" className="form-label">ID</label>
+            <input type="number" className="form-control" id="idnum" value={update.id} onChange={(e) => Setupdate({ ...update, id: e.target.value })} />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="num" className="form-label">Contact</label>
+            <input type="tel" className="form-control" id="num" value={update.contact} onChange={(e) => Setupdate({ ...update, contact: e.target.value })} />
+          </div>
 
-      <form className='p-5'>
-        <div className="mb-3">
-          <label htmlFor="id#" className="form-label" >Email</label>
-          <input type="email" className="form-control" id="id#" aria-describedby="emailHelp" value={update.Email} onChange={(e)=>Setupdate({ ...update, Email: e.target.value })}  />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="name" className="form-label">Name</label>
-          <input type="text" className="form-control" id="name" value={update.name} onChange={(e)=>Setupdate({ ...update, name: e.target.value })}   />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="idnum" className="form-label">ID</label>
-          <input type="number" className="form-control" id="idnum" value={update.id} onChange={(e)=>Setupdate({ ...update, id: e.target.value })}  />
-        </div>
-        <div className="mb-3">
-          <label htmlFor="num" className="form-label">Contact</label>
-          <input type="tel" className="form-control" id="num" value={update.contact} onChange={ (e)=> Setupdate({ ...update, contact: e.target.value })}  />
-        </div>
+          <button type="submit" className="btn btn-primary" onClick={updateUser}>Submit</button>
+        </form>
+      )}
 
-        <button type="submit" className="btn btn-primary" onClick={updateUser}>Submit</button>
-      </form>
+      {showCreateForm && (
+
+        <form className='p-5' onSubmit={createUser} id='createApost'>
+          <div className='d-flex justify-content-center py-2'><h2 className='fw-bold'>Create a Post</h2></div>
+          <div className="mb-3">
+            <label htmlFor="id#" className="form-label" >Email</label>
+            <input type="email" className="form-control" id="postEmail" value={post.Email} aria-describedby="emailHelp" onChange={(e) => { createpost({ ...post, Email: e.target.value }) }} required />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="name" className="form-label">Name</label>
+            <input type="text" className="form-control" id="postName" value={post.name} onChange={(e) => { createpost({ ...post, name: e.target.value }) }} required />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="num" className="form-label">Contact</label>
+            <input type="tel" className="form-control" id="postContact" value={post.contact} onChange={(e) => { createpost({ ...post, contact: e.target.value }) }} />
+          </div>
+
+          <button type="submit" className="btn btn-primary" >Submit</button>
+        </form>
+      )}
 
 
 
