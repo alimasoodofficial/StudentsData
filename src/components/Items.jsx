@@ -2,12 +2,16 @@ import React from 'react';
 // import {selectUser} from './API'
 
 
-const Items = ({ getdata, selectUser, deleteUser }) => {
+const Items = ({ getdata, selectUser, deleteUser, picture }) => {
 
   return (
     <>
       <tr>
         <td>{getdata?.id}</td>
+        <td>
+          <img
+            src={getdata.avatar ? getdata.avatar : picture} width="50px" alt='IMG' onError={(e) => { e.target.onerror = null; e.target.src = picture; }} />
+        </td>
         <td>{getdata?.name}</td>
         <td>{getdata?.Email}</td>
         <td>{getdata?.contact}</td>

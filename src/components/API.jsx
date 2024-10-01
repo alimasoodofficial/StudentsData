@@ -1,22 +1,24 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import Items from './Items';
 import axios from 'axios';
 import { useFormik } from 'formik';
-import {fromValidation} from './schemas/Index'
+import { fromValidation } from './schemas/Index'
 
-const initialValues = {
-  Email: '',
-  name: '',
-  contact: ''
 
-}
 
 export default function API() {
+  const [post, createpost] = useState({
+    Email: '',
+    name: '',
+    contact: ''
+  })
 
-  const {values,error,handleBlur,handleChange,handleSubmit} = useFormik({
-    initialValues: initialValues,
+  const { values, error, handleBlur } = useFormik({
+    initialValues: post,
+    validationSchema: fromValidation,
     onSubmit: (values) => {
+
       console.log(values)
     }
   })
@@ -29,11 +31,7 @@ export default function API() {
   const [showCreateForm, setShowCreateForm] = useState(false);
 
   const [update, Setupdate] = useState({})
-  const [post, createpost] = useState({
-    Email: '',
-    name: '',
-    contact: ''
-  })
+ 
 
   const totalItems = data.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -43,10 +41,11 @@ export default function API() {
   const getAPIdata = async () => {
     try {
       const response = await axios.get(api);
-      const reversedData = [...response.data].reverse(); // Reverse the data here
-      setData(reversedData); // Set the reversed data to state
+      const reversedData = [...response.data].reverse(); 
+      setData(reversedData); 
     } catch (error) {
       console.log(error);
+      response.data.avatar='https://www.svgrepo.com/show/384674/account-avatar-profile-user-11.svg'
     }
   };
 
@@ -81,7 +80,7 @@ export default function API() {
   }
 
 
-  const createUser = (e) => {
+  function createUser(e) {
 
     e.preventDefault();
     axios.post(api, post, {
@@ -152,6 +151,7 @@ export default function API() {
         <thead>
           <tr>
             <th>ID</th>
+            <th>Avatar</th>
             <th>Name</th>
             <th>Email</th>
             <th>Contact</th>
@@ -160,7 +160,7 @@ export default function API() {
         </thead>
         <tbody>
           {data.slice(startIndex, endIndex).map((currentElement, index) => (
-            <Items key={index} getdata={currentElement} data={data} selectUser={selectUser} deleteUser={deleteUser} />
+            <Items key={index} getdata={currentElement} data={data} selectUser={selectUser} deleteUser={deleteUser} picture={"https://www.svgrepo.com/show/384674/account-avatar-profile-user-11.svg"} />
           ))}
         </tbody>
       </table>
@@ -221,27 +221,35 @@ export default function API() {
             <label htmlFor="num" className="form-label">Contact</label>
             <input type="tel" className="form-control" id="num" value={update.contact} onChange={(e) => Setupdate({ ...update, contact: e.target.value })} />
           </div>
+          {/* <div className="mb-3">
+            <label htmlFor="dp" className="form-label">Display Picture</label>
+            <input type="image" className="form-control" id="dp" value={update.avatar} onChange={(e) => Setupdate({ ...update, avatar: e.target.value })} />
+          </div> */}
 
           <button type="submit" className="btn btn-primary" onClick={updateUser}>Submit</button>
         </form>
       )}
 
-        {/* create form  */}
+      {/* create form  */}
       {showCreateForm && (
 
         <form className='p-5' onSubmit={createUser} id='createApost'>
           <div className='d-flex justify-content-center py-2'><h2 className='fw-bold'>Create a Post</h2></div>
           <div className="mb-3">
             <label htmlFor="id#" className="form-label" >Email</label>
-            <input type="email" className="form-control" id="postEmail" value={values.Email} aria-describedby="emailHelp"  onChange={(e) => { createpost({ ...post, Email: handleChange}) }}  onBlur={handleBlur} required />
+            <input type="email" className="form-control" id="postEmail" name='Email' value={post.Email} aria-describedby="emailHelp" onChange={(e) => createpost({ ...post, Email: e.target.value })} />
           </div>
           <div className="mb-3">
             <label htmlFor="name" className="form-label">Name</label>
-            <input type="text" className="form-control" id="postName" value={values.name} onChange={(e) => { createpost({ ...post, name: handleChange}) }} required onBlur={handleBlur} />
+            <input type="text" className="form-control" id="postName" name='name' value={post.name} onChange={(e) => createpost({ ...post, name: e.target.value })} />
           </div>
           <div className="mb-3">
             <label htmlFor="num" className="form-label">Contact</label>
-            <input type="tel" className="form-control" id="postContact" value={values.contact}  onChange={(e) => { createpost({ ...post, contact: handleChange}) }}  onBlur={handleBlur} />
+            <input type="tel" className="form-control" id="postContact" name='contact' value={post.contact} onChange={(e) => createpost({ ...post, contact: e.target.value })} onBlur={handleBlur} />
+          </div>
+          <div className="mb-3">
+            <label htmlFor="postDP" className="form-label">Picture</label>
+            <input type="filename" className="form-control" id="postDP" name='avatar' value={post.avatar} onChange={(e) => createpost({ ...post, avatar: e.target.value })} onBlur={handleBlur} />
           </div>
 
           <button type="submit" className="btn btn-primary" >Submit</button>
