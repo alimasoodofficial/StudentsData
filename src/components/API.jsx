@@ -4,7 +4,8 @@ import Items from './Items';
 import axios from 'axios';
 import { useFormik } from 'formik';
 import { fromValidation } from './schemas/Index'
-import UpdatePost from './UpdatePost';
+import {Link, useLocation, useNavigate } from 'react-router-dom';
+import getAPIdata from './FetchApi'
 
 
 export default function API() {
@@ -15,37 +16,14 @@ export default function API() {
   // })
 
   // formik form validation 
-  const { values, errors,touched, handleBlur, handleChange, handleSubmit } = useFormik({
-    initialValues: {
-      Email: '',
-      name: '',
-      contact: ''
-    },
-    validationSchema: fromValidation,
-    onSubmit: (values) => {
-      console.log(values)
-      axios.post(api, values, {
-        headers: {
-          "Content-Type": "application/json",
-        },
-      })
-        .then((response) => {
-          console.log("Create successful:", response.data);
-          toast.success('Post Created!')
-          getAPIdata();
-        })
-        .catch((error) => {
-          console.error("Error creating data:", error);
-          toast.error('Post Not Created!')
-        });
-    }
-  })
+  
+  let location = useLocation();
+  const navigate = useNavigate();
 
   var [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(5);
   const [showForm, setShowForm] = useState(false);
-  const [showCreateForm, setShowCreateForm] = useState(false);
 
   const [update, Setupdate] = useState({})
 
@@ -65,21 +43,22 @@ export default function API() {
     }
   };
 
-  const updateUser = (e) => {
-    e.preventDefault();
-    axios.put(`${api}/${update.id}`, update)
-      .then((response) => {
-        console.log(response)
-        toast.success('Submited!')
-        getAPIdata();
-      })
-      .catch((error) => {
-        console.log(error);
-        toast.error('Kindly Fill the form completely!')
-      });
+  // const updateUser = (e) => {
+  //   e.preventDefault();
+  //   axios.put(`${api}/${update.id}`, update)
+  //     .then((response) => {
+  //       console.log(response)
+  //       toast.success('Submited!')
+  //       getAPIdata();
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //       toast.error('Kindly Fill the form completely!')
+  //     });
 
 
-  }
+  // }
+
   const deleteUser = (id) => {
 
     axios.delete(`${api}/${id}`)
@@ -94,8 +73,6 @@ export default function API() {
       });
 
   }
-
-
 
 
   useEffect(() => {
@@ -144,7 +121,7 @@ export default function API() {
     <div className="container mt-5">
       <h1 className="text-center mb-4 display-1 fw-bold">Student Data</h1>
       <div className='d-flex py-2'>
-        <a href='#createApost'><button className='btn btn-primary' onClick={showCreate}>Create a Post</button></a>
+        <Link to="/createpost"><button className='btn btn-primary' >Create a Post</button></Link>
       </div>
       <table className="table table-light table-striped ">
         <thead>
@@ -203,9 +180,8 @@ export default function API() {
       
 
       {/* create form  */}
-      {showCreateForm && (
 
-        <form className='p-5' onSubmit={handleSubmit} id='createApost'>
+        {/* <form className='p-5' onSubmit={handleSubmit} >
           <div className='d-flex justify-content-center py-2'><h2 className='fw-bold'>Create a Post</h2></div>
           <div className="mb-3">
             <label htmlFor="id#" className="form-label" >Email</label>
@@ -231,11 +207,21 @@ export default function API() {
           
 
           <button type="submit" className="btn btn-primary" >Submit</button>
-        </form>
-      )}
+        </form> */}
+    
 
 
-      <UpdatePost Setupdate={Setupdate} update={update} updateUser={updateUser}/>
+      {/* <UpdatePost Setupdate={Setupdate} update={update}  updateUser={updateUser} /> */}
+
     </div>
   );
 }
+// export function selectUser(id) {
+//   console.warn(`ASD`, data[id])
+//   let item = data[id];
+//   ETID(item.id)
+//   SETNAME(item.name)
+//   SETEMAIL(item.email)
+//   SETCONTACT(item.Contact)
+
+// }
