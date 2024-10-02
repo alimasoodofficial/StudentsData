@@ -4,25 +4,42 @@ import Items from './Items';
 import axios from 'axios';
 import { useFormik } from 'formik';
 import { fromValidation } from './schemas/Index'
-
+import UpdatePost from './UpdatePost';
 
 
 export default function API() {
-  const [post, createpost] = useState({
-    Email: '',
-    name: '',
-    contact: ''
-  })
+  // const [post, createpost] = useState({
+  //   Email: '',
+  //   name: '',
+  //   contact: ''
+  // })
 
-  const { values, error, handleBlur } = useFormik({
-    initialValues: post,
+  // formik form validation 
+  const { values, errors,touched, handleBlur, handleChange, handleSubmit } = useFormik({
+    initialValues: {
+      Email: '',
+      name: '',
+      contact: ''
+    },
     validationSchema: fromValidation,
     onSubmit: (values) => {
-
       console.log(values)
+      axios.post(api, values, {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      })
+        .then((response) => {
+          console.log("Create successful:", response.data);
+          toast.success('Post Created!')
+          getAPIdata();
+        })
+        .catch((error) => {
+          console.error("Error creating data:", error);
+          toast.error('Post Not Created!')
+        });
     }
   })
-  console.log(error)
 
   var [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -31,21 +48,20 @@ export default function API() {
   const [showCreateForm, setShowCreateForm] = useState(false);
 
   const [update, Setupdate] = useState({})
- 
+
 
   const totalItems = data.length;
   const totalPages = Math.ceil(totalItems / itemsPerPage);
-
   const api = `https://64dc92e1e64a8525a0f6b640.mockapi.io/student`;
 
   const getAPIdata = async () => {
     try {
       const response = await axios.get(api);
-      const reversedData = [...response.data].reverse(); 
-      setData(reversedData); 
+      const reversedData = [...response.data].reverse();
+      setData(reversedData);
     } catch (error) {
       console.log(error);
-      response.data.avatar='https://www.svgrepo.com/show/384674/account-avatar-profile-user-11.svg'
+      response.data.avatar = 'https://www.svgrepo.com/show/384674/account-avatar-profile-user-11.svg'
     }
   };
 
@@ -80,24 +96,7 @@ export default function API() {
   }
 
 
-  function createUser(e) {
 
-    e.preventDefault();
-    axios.post(api, post, {
-      headers: {
-        "Content-Type": "application/json",
-      },
-    })
-      .then((response) => {
-        console.log("Create successful:", response.data);
-        toast.success('Post Created!')
-        getAPIdata();
-      })
-      .catch((error) => {
-        console.error("Error creating data:", error);
-        toast.error('Post Not Created!')
-      });
-  };
 
   useEffect(() => {
     getAPIdata();
@@ -201,72 +200,42 @@ export default function API() {
       </div>
 
 
-      {/* update form  */}
-      {showForm && (
-        <form className='p-5 '  >
-          <div className='d-flex justify-content-center py-2'><h2 className='fw-bold'>Update Form</h2></div>
-          <div className="mb-3">
-            <label htmlFor="id#" className="form-label" >Email</label>
-            <input type="email" className="form-control" id="id#" aria-describedby="emailHelp" value={update.Email} onChange={(e) => Setupdate({ ...update, Email: e.target.value })} />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="name" className="form-label">Name</label>
-            <input type="text" className="form-control" id="name" value={update.name} onChange={(e) => Setupdate({ ...update, name: e.target.value })} />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="idnum" className="form-label">ID</label>
-            <input type="number" className="form-control" id="idnum" value={update.id} onChange={(e) => Setupdate({ ...update, id: e.target.value })} />
-          </div>
-          <div className="mb-3">
-            <label htmlFor="num" className="form-label">Contact</label>
-            <input type="tel" className="form-control" id="num" value={update.contact} onChange={(e) => Setupdate({ ...update, contact: e.target.value })} />
-          </div>
-          {/* <div className="mb-3">
-            <label htmlFor="dp" className="form-label">Display Picture</label>
-            <input type="image" className="form-control" id="dp" value={update.avatar} onChange={(e) => Setupdate({ ...update, avatar: e.target.value })} />
-          </div> */}
-
-          <button type="submit" className="btn btn-primary" onClick={updateUser}>Submit</button>
-        </form>
-      )}
+      
 
       {/* create form  */}
       {showCreateForm && (
 
-        <form className='p-5' onSubmit={createUser} id='createApost'>
+        <form className='p-5' onSubmit={handleSubmit} id='createApost'>
           <div className='d-flex justify-content-center py-2'><h2 className='fw-bold'>Create a Post</h2></div>
           <div className="mb-3">
             <label htmlFor="id#" className="form-label" >Email</label>
-            <input type="email" className="form-control" id="postEmail" name='Email' value={post.Email} aria-describedby="emailHelp" onChange={(e) => createpost({ ...post, Email: e.target.value })} />
+            <input type="email" className="form-control" id="postEmail" name='Email' value={values.Email} aria-describedby="emailHelp" onChange={handleChange} />
+            {errors.Email && touched.Email ? (
+             <div className='text-danger fw-bold pt-2'>{errors.Email}</div>
+           ) : null}
           </div>
           <div className="mb-3">
             <label htmlFor="name" className="form-label">Name</label>
-            <input type="text" className="form-control" id="postName" name='name' value={post.name} onChange={(e) => createpost({ ...post, name: e.target.value })} />
+            <input type="text" className="form-control" id="postName" name='name' value={values.name} onChange={handleChange} />
+            {errors.name && touched.name ? (
+             <div className='text-danger fw-bold pt-2'>{errors.name}</div>
+           ) : null}
           </div>
           <div className="mb-3">
             <label htmlFor="num" className="form-label">Contact</label>
-            <input type="tel" className="form-control" id="postContact" name='contact' value={post.contact} onChange={(e) => createpost({ ...post, contact: e.target.value })} onBlur={handleBlur} />
+            <input type="tel" className="form-control" id="postContact" name='contact' value={values.contact} onChange={handleChange} onBlur={handleBlur} />
+            {errors.contact && touched.contact ? (
+             <div className='text-danger fw-bold pt-2'>{errors.contact}</div>
+           ) : null}
           </div>
-          <div className="mb-3">
-            <label htmlFor="postDP" className="form-label">Picture</label>
-            <input type="filename" className="form-control" id="postDP" name='avatar' value={post.avatar} onChange={(e) => createpost({ ...post, avatar: e.target.value })} onBlur={handleBlur} />
-          </div>
+          
 
           <button type="submit" className="btn btn-primary" >Submit</button>
         </form>
       )}
 
 
-
+      <UpdatePost Setupdate={Setupdate} update={update} updateUser={updateUser}/>
     </div>
   );
 }
-// export function selectUser(id) {
-//   console.warn(`ASD`, data[id])
-//   let item = data[id];
-//   ETID(item.id)
-//   SETNAME(item.name)
-//   SETEMAIL(item.email)
-//   SETCONTACT(item.Contact)
-
-// }
