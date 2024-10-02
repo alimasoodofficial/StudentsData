@@ -2,23 +2,12 @@ import React, { useEffect, useState, useMemo } from 'react';
 import toast, { Toaster } from 'react-hot-toast';
 import Items from './Items';
 import axios from 'axios';
-import { useFormik } from 'formik';
-import { fromValidation } from './schemas/Index'
-import {Link, useLocation, useNavigate } from 'react-router-dom';
-import getAPIdata from './FetchApi'
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 
 
 export default function API() {
-  // const [post, createpost] = useState({
-  //   Email: '',
-  //   name: '',
-  //   contact: ''
-  // })
 
-  // formik form validation 
-  
-  let location = useLocation();
-  const navigate = useNavigate();
+
 
   var [data, setData] = useState([]);
   const [currentPage, setCurrentPage] = useState(1);
@@ -43,21 +32,7 @@ export default function API() {
     }
   };
 
-  // const updateUser = (e) => {
-  //   e.preventDefault();
-  //   axios.put(`${api}/${update.id}`, update)
-  //     .then((response) => {
-  //       console.log(response)
-  //       toast.success('Submited!')
-  //       getAPIdata();
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //       toast.error('Kindly Fill the form completely!')
-  //     });
 
-
-  // }
 
   const deleteUser = (id) => {
 
@@ -118,11 +93,14 @@ export default function API() {
 
 
   return (
-    <div className="container mt-5">
-      <h1 className="text-center mb-4 display-1 fw-bold">Student Data</h1>
+    <div className="w-100 mt-5">
+      <div className='d-flex justify-content-center'>
+        <h1 className="text-center mb-4 display-1 fw-bold ">Student Data</h1>
+      </div>
       <div className='d-flex py-2'>
         <Link to="/createpost"><button className='btn btn-primary' >Create a Post</button></Link>
       </div>
+      
       <table className="table table-light table-striped ">
         <thead>
           <tr>
@@ -177,51 +155,12 @@ export default function API() {
       </div>
 
 
-      
-
-      {/* create form  */}
-
-        {/* <form className='p-5' onSubmit={handleSubmit} >
-          <div className='d-flex justify-content-center py-2'><h2 className='fw-bold'>Create a Post</h2></div>
-          <div className="mb-3">
-            <label htmlFor="id#" className="form-label" >Email</label>
-            <input type="email" className="form-control" id="postEmail" name='Email' value={values.Email} aria-describedby="emailHelp" onChange={handleChange} />
-            {errors.Email && touched.Email ? (
-             <div className='text-danger fw-bold pt-2'>{errors.Email}</div>
-           ) : null}
-          </div>
-          <div className="mb-3">
-            <label htmlFor="name" className="form-label">Name</label>
-            <input type="text" className="form-control" id="postName" name='name' value={values.name} onChange={handleChange} />
-            {errors.name && touched.name ? (
-             <div className='text-danger fw-bold pt-2'>{errors.name}</div>
-           ) : null}
-          </div>
-          <div className="mb-3">
-            <label htmlFor="num" className="form-label">Contact</label>
-            <input type="tel" className="form-control" id="postContact" name='contact' value={values.contact} onChange={handleChange} onBlur={handleBlur} />
-            {errors.contact && touched.contact ? (
-             <div className='text-danger fw-bold pt-2'>{errors.contact}</div>
-           ) : null}
-          </div>
-          
-
-          <button type="submit" className="btn btn-primary" >Submit</button>
-        </form> */}
-    
 
 
-      {/* <UpdatePost Setupdate={Setupdate} update={update}  updateUser={updateUser} /> */}
+
+
+
 
     </div>
   );
 }
-// export function selectUser(id) {
-//   console.warn(`ASD`, data[id])
-//   let item = data[id];
-//   ETID(item.id)
-//   SETNAME(item.name)
-//   SETEMAIL(item.email)
-//   SETCONTACT(item.Contact)
-
-// }

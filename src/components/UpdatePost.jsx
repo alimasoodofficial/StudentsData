@@ -24,10 +24,11 @@ export default function UpdatePost() {
       axios.put(`${api}/${gettingdata.id}`, values)
         .then((response) => {
           console.log(`Response:`,response)
-          toast.success('Updated!')
           getAPIdata();
         })
         .then(navigate('/', { replace: true }))
+        .then(toast.success('Updated!')
+      )
        
         .catch((error) => {
           console.log("error" ,error);
@@ -43,16 +44,21 @@ export default function UpdatePost() {
       </div>
       {/* update form  */}
       <form className='p-5 ' onSubmit={handleSubmit} >
-        <div className='d-flex justify-content-center py-2'><h2 className='fw-bold'>Update Form</h2></div>
+        <div className='d-flex justify-content-center py-2'><h2 className='fw-bold display-3'>Update Form</h2></div>
         <div className="mb-3">
-          <input type="email" className="form-control" name='Email' aria-describedby="emailHelp" value={values.Email} onChange={handleChange} />
+        <label className='py-1 ps-1 fw-bold '>Enter Email:</label>
+          <input type="email" className="form-control" name='Email' aria-describedby="emailHelp" placeholder='your text here' value={values.Email} onChange={handleChange} />
         </div>
         <div className="mb-3">
-          <input type="text" className="form-control"value={values.name} name='name' onChange={handleChange} />
+        <label className='py-1 ps-1 fw-bold '>Your Name:</label>
+
+          <input type="text" className="form-control"value={values.name} placeholder='your text here' name='name' onChange={handleChange} />
         </div>
      
         <div className="mb-3">
-          <input type="tel" className="form-control"  value={values.contact} name='contact' onChange={handleChange} />
+        <label className='py-1 ps-1 fw-bold '>Your Phone Number:</label>
+
+          <input type="tel" className="form-control"  value={values.contact} name='contact' placeholder='your text here' onChange={handleChange} />
         </div>
         <button type="submit" className="btn btn-primary" >Submit</button>
       </form>

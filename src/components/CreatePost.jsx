@@ -26,12 +26,13 @@ export default function CreatePost() {
                 },
             })
                 .then((response) => {
-                    console.log("Create successful:", response.data);
-                    toast.success('Post Created!')
                     getAPIdata();
+                    console.log("Create successful:", response.data);
 
                 })
                 .then(navigate('/', { replace: true }))
+                .then(toast.success('Post Created!')
+            )
                 .catch((error) => {
                     console.error("Error creating data:", error);
                     // toast.error('There is an error!')
@@ -43,7 +44,7 @@ export default function CreatePost() {
                 
 
             <form className='p-5' onSubmit={handleSubmit} >
-                <div className='d-flex justify-content-center py-2'><h2 className='fw-bold'>Create a Post</h2></div>
+                <div className='d-flex justify-content-center py-2'><h2 className='fw-bold display-3'>Create From</h2></div>
                 <div className="mb-3">
                     <label htmlFor="id#" className="form-label" >Email</label>
                     <input type="email" className="form-control" id="postEmail" name='Email' value={values.Email} aria-describedby="emailHelp" onChange={handleChange} />
