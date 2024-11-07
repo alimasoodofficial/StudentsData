@@ -92,7 +92,7 @@ export default function API() {
 
 
 
-  return (
+  return (  
     <div className="container mt-5">
       <div className='d-flex justify-content-center'>
         <h1 className="text-center mb-4 display-1 fw-bold ">Student Data</h1>

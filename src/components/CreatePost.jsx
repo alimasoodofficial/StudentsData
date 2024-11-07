@@ -35,7 +35,6 @@ export default function CreatePost() {
             )
                 .catch((error) => {
                     console.error("Error creating data:", error);
-                    // toast.error('There is an error!')
                 });
         }
     })
